@@ -22,15 +22,8 @@ int main(int arg, char *argv[])
 
 	//gnuplot variable
 	gnuplot_ctrl * h;
-	double x[BuffLength-1];
-	double y[BuffLength-1];
+	double *y= (double *)malloc((BuffLength-1)*sizeof(double));
 	int i,j;
-
-	for (i=0; i<BuffLength-1; i++)
-	{
-		x[i]=(double)(i*8/125);
-		//to keep in mind, this give step note strait line
-	}
 
 	//Create socket
 	sock=socket(AF_INET, SOCK_STREAM, 0);
@@ -58,7 +51,7 @@ int main(int arg, char *argv[])
 	gnuplot_setstyle(h,"lines");
 	gnuplot_set_xlabel(h,"time (us)");
 	gnuplot_set_ylabel(h,"signal");
-	gnuplot_cmd(h,"set yrange [1:%d",Ymax);
+	gnuplot_cmd(h,"set yrange [1:%d]",Ymax);
 	gnuplot_cmd(h,"set xrange [0:1024]");
 
 	j=0;
@@ -84,5 +77,6 @@ int main(int arg, char *argv[])
 
 	sleep(30);
 	close(sock);
+	free(y);
 	return 0;
 }

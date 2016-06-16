@@ -712,5 +712,54 @@ void gnuplot_plot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char
     return ;
 }
 
+//Adding function to plot surface graphics these function can be improve by adding some choice sur as surf or 3D and the palette later?
+//Moreover the plot and surf function can also be improve by not passing through a tmp file (writting and reading...slow!)
+
+/*the gnuplot_surf_gray function plot a rectangular surface in grey shade
+  we considere a cartesian mesh, where x is Nx long, y is Ny long and 
+  z is Nx*Ny long
+*/
+void gnuplot_surf_gray(gnuplot_ctrl *handle, double *x, double *y, double **z, int Nx, int Ny, char *title)
+{
+    int i, j;
+    FILE* tmpfd ;
+    char const * tmpfname;
+
+    if (handle==NULL || x==NULL || y==NULL || z==NULL || (Nx<1) || (Ny<1)) return ;
+
+    /* Open temporary file for output   */
+    tmpfname = gnuplot_tmpfile(handle);
+    tmpfd = fopen(tmpfname, "w");
+
+    if (tmpfd == NULL) {
+        fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        return ;
+    }
+
+    /* Write data to this file  */
+    for (i=0 ; i<Nx; i++) 
+    {
+	for (j=0 ; j<Ny ; j++)
+	{
+            fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[j], z[i][j]);
+	}
+	fprintf(tmpfd, "\n");
+    }
+    fclose(tmpfd) ;
+
+    gnuplot_surf_atmpfile(handle,tmpfname,title);
+    return ;
+}
+
+void gnuplot_surf_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title)
+{
+    char const *    cmd    = (handle->nplots > 0) ? "replot" : "splot";
+    title                  = (title == NULL)      ? "(none)" : title;
+    gnuplot_cmd(handle, "set pm3d map"); //surf option
+    gnuplot_cmd(handle, "set palette gray"); //grey level
+    gnuplot_cmd(handle, "%s \"%s\" title \"%s\"", cmd, tmp_filename, title) ;
+    handle->nplots++ ;
+    return ;
+}
 
 /* vim: set ts=4 et sw=4 tw=75 */
