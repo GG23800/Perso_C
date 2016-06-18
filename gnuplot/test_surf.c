@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
 			}
 	}
 
-	gnuplot_surf_gray(h, x, y, z, Nx, Ny, "try surface plot");
+	gnuplot_surf_gray_IMP(h, x, y, z, Nx, Ny, "try surface plot");
 
 	sleep(10);
 	gnuplot_close(h);
