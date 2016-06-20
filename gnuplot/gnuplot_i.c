@@ -26,7 +26,7 @@
 /*
 18/06/2016
 This gnuplot_i C script as been modified by Jérôme Dubois bu adding some functions to plot surface graphic.
-In the idea of make an ap for echopen, it is possible to have x=r*cos(theta) and y=r*sin(theta) and the surface plot will be a sector. enjoy
+In the idea of make an ap for echopen, it is possible to have x=r*cos(theta) and y=r*sin(theta) and one must use gnuplot_angle_grey_IMP, x and y must be a 2D tensor (2D table). enjoy
 */
 
 /*---------------------------------------------------------------------------
@@ -771,12 +771,12 @@ void gnuplot_surf_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char
 /*
 gnuplot_surf_gray_IMP is the improvement of gnuplot_surf_gray, it not use a temporary file. So it must be faster because we save time by not writing data into a file and after gnuplot read this file
 */
-void gnuplot_surf_gray_IMP(gnuplot_ctrl *handle, double *x, double *y, double **z, int Nx, int Ny, char *title)
+void gnuplot_surf_gray_IMP(gnuplot_ctrl *handle, double *x, double *y, double **z, int Nx, int Ny)
 {
     int i, j;
     if (handle==NULL || x==NULL || y==NULL || z==NULL || (Nx<1) || (Ny<1)) return ;
 
-    //gnuplot_cmd(handle, "clear"); //clear figure for animation
+    gnuplot_cmd(handle, "clear"); //clear figure for animation
     gnuplot_cmd(handle, "set pm3d map"); //surf option
     gnuplot_cmd(handle, "set palette gray"); //grey level
     gnuplot_cmd(handle, "splot '-'\n");
@@ -793,4 +793,29 @@ void gnuplot_surf_gray_IMP(gnuplot_ctrl *handle, double *x, double *y, double **
  
     return ;
 }
+
+void gnuplot_angle_gray_IMP(gnuplot_ctrl *handle, double **x, double **y, double **z, int Nr, int Ntheta)
+{
+    int i, j;
+    if (handle==NULL || x==NULL || y==NULL || z==NULL || (Nr<1) || (Ntheta<1)) return ;
+
+    gnuplot_cmd(handle, "clear"); //clear figure for animation
+    gnuplot_cmd(handle, "set pm3d map"); //surf option
+    gnuplot_cmd(handle, "set palette gray"); //grey level
+    gnuplot_cmd(handle, "splot '-'\n");
+     /* Write data to this file  */
+    for (i=0 ; i<Ntheta ; i++) 
+    {
+	for (j=0 ; j<Nr ; j++)
+	{
+            gnuplot_cmd(handle, "%.18e %.18e %.18e", x[i][j], y[i][j], z[i][j]);
+	}
+	gnuplot_cmd(handle, ""); //empty because gnuplot_cmd finish the command by \n
+    }
+    gnuplot_cmd(handle, "e");
+ 
+    return ;	
+}
+
+
 /* vim: set ts=4 et sw=4 tw=75 */

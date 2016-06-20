@@ -415,4 +415,17 @@ int gnuplot_write_multi_csv(
     int                 numColumns,
     char const      *   title);
 
+/*
+time for surface plotting :)
+*/
+
+void gnuplot_surf_gray(gnuplot_ctrl *handle, double *x, double *y, double **z, int Nx, int Ny, char *title);
+
+void gnuplot_surf_atmpfile(gnuplot_ctrl *handle, char const *tmp_filename, char const *title);
+
+void gnuplot_surf_gray_IMP(gnuplot_ctrl *handle, double *x, double *y, double **z, int Nx, int Ny, char *title);
+
+void gnuplot_angle_gray_IMP(gnuplot_ctrl *handle, double **x, double **y, double **z, int Nx, int Ny, char *title);
+
+
 #endif
