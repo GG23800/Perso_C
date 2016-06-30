@@ -46,7 +46,7 @@ int main (int argc, char *argv[])
 {
 	gnuplot_ctrl * h; //handler of gnuplot session
 
-	int i, j;
+	int i, j, k;
 
 	double **x = NULL;
 	double **y = NULL;
@@ -69,13 +69,16 @@ int main (int argc, char *argv[])
 	{
 		for (j=0 ; j<BuffLength-1 ; j++)
 			{
-				z[i][j]=x[i][j]*y[i][j];
+				z[i][j]=cos(x[i][j])*sin(y[i][j]);
 			}
 	}
 
-	gnuplot_angle_gray_IMP(h, x, y, z, BuffLength-1, Nline);
+	for (k=0 ; k<10 ; k++)
+	{
+		gnuplot_angle_gray_IMP(h, x, y, z, BuffLength-1, Nline);
+	}
 
-	sleep(10);
+	//sleep(10);
 	gnuplot_close(h);
 	free(x);
 	free(y);

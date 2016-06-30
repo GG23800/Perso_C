@@ -16,9 +16,9 @@
 #define angle 60 //angle in degree of the scan
 #define Nline 64 //number of line of the scan
 
-int init_xy (double **x, double **y)
+int init_xy (double *x, double *y)
 {
-	int i, j;
+	int i;
 	double deltar, deltatheta, anglerad, anglemin;
 	double *r = (double *)malloc((BuffLength-1)*sizeof(double));
 	double *theta = (double *)malloc(Nline*sizeof(double)); 
@@ -31,15 +31,12 @@ int init_xy (double **x, double **y)
 	for (i=0 ; i<BuffLength-1 ; i++)
 	{
 		r[i] = (double)(Rmin)+(double)(i)*deltar;
+		x[i]=r[i];
 	}
 	for (i=0 ; i<Nline ; i++)
 	{
 		theta[i]=anglemin+(double)(i)*deltatheta;
-		for (j=0 ; j<BuffLength-1 ; j++)
-		{
-			x[i][j]=r[j]*cos(theta[i]);
-			y[i][j]=r[j]*sin(theta[i]);
-		}
+		y[i]=r[i];
 	}
 	
 	free(r);
@@ -47,7 +44,7 @@ int init_xy (double **x, double **y)
 	return 0;
 }
 
-void writefile (double **x, double **y, double **z, int line, int row)
+void writefile (double *x, double *y, double **z, int line, int row)
 {
 	int i, j;
 	FILE * f;
@@ -56,7 +53,7 @@ void writefile (double **x, double **y, double **z, int line, int row)
 	{
 		for (j=0 ; j<row ; j++)
 		{
-			fprintf(f, "%f %f %f\n", x[i][j], y[i][j], z[i][j]);
+			fprintf(f, "%f %f %f\n", x[i], y[j], z[i][j]);
 		}
 	}
 	fclose(f);
@@ -75,16 +72,14 @@ int main(int arg, char *argv[])
 
 	int i, j, line;
 
-	double **x = NULL;
-	double **y = NULL;
+	double *x = NULL;
+	double *y = NULL;
 	double **z = (double **)malloc(Nline*sizeof(double *));
-	x = malloc(Nline*sizeof(double *));
-	y = malloc(Nline*sizeof(double *));
 
 	for (i=0 ; i<Nline ; i++)
 	{
-		x[i]=malloc((BuffLength-1)*sizeof(double));
-		y[i]=malloc((BuffLength-1)*sizeof(double));
+		x=malloc((BuffLength-1)*sizeof(double));
+		y=malloc(Nline*sizeof(double));
 		z[i]=malloc((BuffLength-1)*sizeof(double));
 	}
 
@@ -113,29 +108,25 @@ int main(int arg, char *argv[])
 
 	//gnuplot object
 	h=gnuplot_init();
-	gnuplot_cmd(h, "set pm3d map");
-	gnuplot_cmd(h, "set palette gray");
-	//gnuplot_angle_gray_IMP(h, x, y, z, BuffLength-1, Nline);
-
+	gnuplot_surf_gray(h, x, y, z, BuffLength-1, Nline, "test");
 	while(1)
 	{	
-		for (i=0 ; i<Nline ; i++)
-		{
-			if(recv(sock, buff, BuffLength, MSG_WAITALL)==0)
+		if(recv(sock, buff, BuffLength, MSG_WAITALL)==0)
 			{
 				printf("Server closed\n");
 				break;
 			}
 
-			line=(int)(buff[0])-1;
-			printf("%d\n",line);
+		for (i=0 ; i<Nline ; i++)
+		{
+			line=(int)(buff[0]);
 			for (j=0 ; j<BuffLength-1 ; j++)
 			{
 				z[line][j]=(double)(buff[j+1]);
 			}
 		}
 
-		gnuplot_angle_gray_IMP(h, x, y, z, BuffLength-1, Nline);
+		gnuplot_surf_gray(h, x, y, z, BuffLength-1, Nline,"test");
 	}
 	writefile(x,y,z,Nline,BuffLength-1);
 

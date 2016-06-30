@@ -47,17 +47,18 @@ int init_xy (double **x, double **y)
 	return 0;
 }
 
-void writefile (double **x, double **y, double **z, int line, int row)
+void writefile (double **x, double **y, int **z, int line, int row)
 {
 	int i, j;
 	FILE * f;
-	f = fopen("data.dat", "w+");
+	f = fopen("scan.dat", "w+");
 	for (i=0 ; i<line ; i++)
 	{
 		for (j=0 ; j<row ; j++)
 		{
-			fprintf(f, "%f %f %f\n", x[i][j], y[i][j], z[i][j]);
+			fprintf(f, "%f %f %d\n", x[i][j], y[i][j], z[i][j]);
 		}
+		fprintf(f,"\n");
 	}
 	fclose(f);
 }
@@ -77,7 +78,7 @@ int main(int arg, char *argv[])
 
 	double **x = NULL;
 	double **y = NULL;
-	double **z = (double **)malloc(Nline*sizeof(double *));
+	int **z = (int **)malloc(Nline*sizeof(int *));
 	x = malloc(Nline*sizeof(double *));
 	y = malloc(Nline*sizeof(double *));
 
@@ -85,7 +86,7 @@ int main(int arg, char *argv[])
 	{
 		x[i]=malloc((BuffLength-1)*sizeof(double));
 		y[i]=malloc((BuffLength-1)*sizeof(double));
-		z[i]=malloc((BuffLength-1)*sizeof(double));
+		z[i]=malloc((BuffLength-1)*sizeof(int));
 	}
 
 	init_xy(x,y);
@@ -117,25 +118,38 @@ int main(int arg, char *argv[])
 	gnuplot_cmd(h, "set palette gray");
 	//gnuplot_angle_gray_IMP(h, x, y, z, BuffLength-1, Nline);
 
-	while(1)
+	int k=1;
+	int temp=0;
+	while(k)
 	{	
 		for (i=0 ; i<Nline ; i++)
 		{
 			if(recv(sock, buff, BuffLength, MSG_WAITALL)==0)
 			{
 				printf("Server closed\n");
+				i=Nline+2;
+				k=0;
 				break;
 			}
 
-			line=(int)(buff[0])-1;
-			printf("%d\n",line);
-			for (j=0 ; j<BuffLength-1 ; j++)
+			if (i<Nline+2)
 			{
-				z[line][j]=(double)(buff[j+1]);
+				line=(int)(buff[0])-1;
+				for (j=0 ; j<BuffLength-1 ; j++)
+				{
+					temp=(int)(buff[j+1]);
+					if (temp<0)
+					{
+						printf("temp=%d\n",temp);
+						z[line][j]=255+temp;
+					}
+					else z[line][j]=temp;
+					z[line][j]=(int)(buff[j+1]);
+				}
 			}
 		}
 
-		gnuplot_angle_gray_IMP(h, x, y, z, BuffLength-1, Nline);
+		gnuplot_matrix(h, z, BuffLength-1, Nline);
 	}
 	writefile(x,y,z,Nline,BuffLength-1);
 

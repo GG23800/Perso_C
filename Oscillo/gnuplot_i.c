@@ -771,7 +771,7 @@ void gnuplot_surf_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char
 /*
 gnuplot_surf_gray_IMP is the improvement of gnuplot_surf_gray, it not use a temporary file. So it must be faster because we save time by not writing data into a file and after gnuplot read this file
 */
-void gnuplot_surf_gray_IMP(gnuplot_ctrl *handle, double *x, double *y, double **z, int Nx, int Ny, char *title)
+void gnuplot_surf_gray_IMP(gnuplot_ctrl *handle, double *x, double *y, double **z, int Nx, int Ny)
 {
     int i, j;
     if (handle==NULL || x==NULL || y==NULL || z==NULL || (Nx<1) || (Ny<1)) return ;
@@ -794,21 +794,21 @@ void gnuplot_surf_gray_IMP(gnuplot_ctrl *handle, double *x, double *y, double **
     return ;
 }
 
-void gnuplot_angle_gray_IMP(gnuplot_ctrl *handle, double **x, double **y, double **z, int Nx, int Ny, char *title)
+void gnuplot_angle_gray_IMP(gnuplot_ctrl *handle, double **x, double **y, double **z, int Nr, int Ntheta)
 {
     int i, j;
-    if (handle==NULL || x==NULL || y==NULL || z==NULL || (Nx<1) || (Ny<1)) return ;
+    if (handle==NULL || x==NULL || y==NULL || z==NULL || (Nr<1) || (Ntheta<1)) return ;
 
     gnuplot_cmd(handle, "clear"); //clear figure for animation
     gnuplot_cmd(handle, "set pm3d map"); //surf option
     gnuplot_cmd(handle, "set palette gray"); //grey level
     gnuplot_cmd(handle, "splot '-'\n");
      /* Write data to this file  */
-    for (i=0 ; i<Nx; i++) 
+    for (i=0 ; i<Ntheta ; i++) 
     {
-	for (j=0 ; j<Ny ; j++)
+	for (j=0 ; j<Nr ; j++)
 	{
-            gnuplot_cmd(handle, "%.18e %.18e %.18e", x[i][j], y[j][j], z[i][j]);
+            gnuplot_cmd(handle, "%.18e %.18e %.18e", x[i][j], y[i][j], z[i][j]);
 	}
 	gnuplot_cmd(handle, ""); //empty because gnuplot_cmd finish the command by \n
     }
@@ -817,5 +817,30 @@ void gnuplot_angle_gray_IMP(gnuplot_ctrl *handle, double **x, double **y, double
     return ;	
 }
 
+void gnuplot_matrix(gnuplot_ctrl *handle, int **z, int Nr, int Ntheta)
+{
+	int i, j;
+	FILE *fmat;
+	if (handle==NULL || z==NULL || (Nr<1) || (Ntheta<1)) return;
+
+	fmat=fopen("mat.dat","w+");
+
+	for (i=0 ; i<Ntheta ; i++)
+	{
+		for (j=0 ; j<Nr ; j++)
+		{
+			fprintf(fmat,"%d ",z[i][j]);
+		}
+		fprintf(fmat,"\n");
+	}
+	fclose(fmat);
+
+	//gnuplot_cmd(handle, "clear");
+	//gnuplot_cmd(handle, "set pm3d map");
+	//gnuplot_cmd(handle, "set palette gray");
+	gnuplot_cmd(handle, "splot \"mat.dat\" matrix");
+
+	return;
+}
 
 /* vim: set ts=4 et sw=4 tw=75 */

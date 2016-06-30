@@ -817,5 +817,30 @@ void gnuplot_angle_gray_IMP(gnuplot_ctrl *handle, double **x, double **y, double
     return ;	
 }
 
+void gnuplot_matrix(gnuplot_ctrl *handle, int **z, int Nr, int Ntheta)
+{
+	int i, j;
+	FILE *fmat;
+	if (handle==NULL || z==NULL || (Nr<1) || (Ntheta<1)) return;
+
+	fmat=fopen("mat.dat","w+");
+
+	for (i=0 ; i<Ntheta ; i++)
+	{
+		for (j=0 ; j<Nr ; j++)
+		{
+			fprintf(fmat,"%d ",z[i][j]);
+		}
+		fprintf(fmat,"\n");
+	}
+	fclose(fmat);
+
+	//gnuplot_cmd(handle, "clear");
+	//gnuplot_cmd(handle, "set pm3d map");
+	//gnuplot_cmd(handle, "set palette gray");
+	gnuplot_cmd(handle, "splot \"mat.dat\" matrix");
+
+	return;
+}
 
 /* vim: set ts=4 et sw=4 tw=75 */
