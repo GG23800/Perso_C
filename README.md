@@ -1,1 +1,1 @@
-All work in this repository is on the public domaine and are free.
+All works in this repository are on the public domaine and are free.

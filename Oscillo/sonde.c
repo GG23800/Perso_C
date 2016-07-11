@@ -119,7 +119,7 @@ int main(int arg, char *argv[])
 	//gnuplot_angle_gray_IMP(h, x, y, z, BuffLength-1, Nline);
 
 	int k=1;
-	int temp=0;
+	//int temp=0;
 	while(k)
 	{	
 		for (i=0 ; i<Nline ; i++)
@@ -137,14 +137,14 @@ int main(int arg, char *argv[])
 				line=(int)(buff[0])-1;
 				for (j=0 ; j<BuffLength-1 ; j++)
 				{
-					temp=(int)(buff[j+1]);
+					/*temp=(int)(buff[j+1]);
 					if (temp<0)
 					{
 						printf("temp=%d\n",temp);
 						z[line][j]=255+temp;
 					}
-					else z[line][j]=temp;
-					z[line][j]=(int)(buff[j+1]);
+					else z[line][j]=temp;*/
+					z[line][j]=(int)((buff[j+1]+256)%256);
 				}
 			}
 		}

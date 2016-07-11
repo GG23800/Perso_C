@@ -29,7 +29,7 @@ int main(int arg, char *argv[])
 	const char *rep="baziga!!";
 
 	//buffers parameters
-	char buff[Nset*setL+1];	
+	char buff[Nset*setL];	
 	char **charbuff=NULL;
 	int *intbuff=(int *)malloc(Nset*sizeof(int));
 	charbuff=(char **)malloc(Nset*sizeof(char *));
@@ -77,7 +77,6 @@ int main(int arg, char *argv[])
 			printf("Server closed\n");
 			break;
 		}
-		buff[Nset*setL+1]=(char)0;
 		printf("%s\n",buff);
 
 		for (i=0 ; i<Nset ; i++)
@@ -104,9 +103,9 @@ int main(int arg, char *argv[])
 			for (i=0 ; i<intbuff[3] ; i++)
 			{
 				//fscanf(fmat,"%c ",&tmpbuff[j][i]);
-				tmp=(j+1)*(i+1)%255;
+				tmp=(j+1)*(i+1)%256;
 				tmpbuff[j][i]=(char)(tmp);
-				printf("sent:%i\n",tmp);
+				printf("tmpbuff[%i][%i]=:%i\n",j,i,tmp);
 			}
 		}
 		fclose(fmat);
@@ -118,5 +117,7 @@ int main(int arg, char *argv[])
 	}
 
 	close(sock);
+	free(charbuff);
+	free(intbuff);
 	return 0;
 }
