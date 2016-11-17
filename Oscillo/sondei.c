@@ -14,7 +14,7 @@
 #define Rmin 25 //minimum distance (mm) of the scan
 #define Rmax 150 //maximum distance (mm) of the scan
 #define angle 60 //angle in degree of the scan
-#define Nline 100 //number of line of the scan
+#define Nline 64 //number of line of the scan
 
 int init_xy (double **x, double **y)
 {
@@ -47,7 +47,7 @@ int init_xy (double **x, double **y)
 	return 0;
 }
 
-void writefile (double **x, double **y, int **z, int line, int row)
+void writefile (double **x, double **y, double **z, int line, int row)
 {
 	int i, j;
 	FILE * f;
@@ -56,7 +56,7 @@ void writefile (double **x, double **y, int **z, int line, int row)
 	{
 		for (j=0 ; j<row ; j++)
 		{
-			fprintf(f, "%f %f %d\n", x[i][j], y[i][j], z[i][j]);
+			fprintf(f, "%f %f %f\n", x[i][j], y[i][j], z[i][j]);
 		}
 		fprintf(f,"\n");
 	}
@@ -78,7 +78,7 @@ int main(int arg, char *argv[])
 
 	double **x = NULL;
 	double **y = NULL;
-	int **z = (int **)malloc(Nline*sizeof(int *));
+	double **z = (double **)malloc(Nline*sizeof(double *));
 	x = malloc(Nline*sizeof(double *));
 	y = malloc(Nline*sizeof(double *));
 
@@ -86,7 +86,7 @@ int main(int arg, char *argv[])
 	{
 		x[i]=malloc((BuffLength-1)*sizeof(double));
 		y[i]=malloc((BuffLength-1)*sizeof(double));
-		z[i]=malloc((BuffLength-1)*sizeof(int));
+		z[i]=malloc((BuffLength-1)*sizeof(double));
 	}
 
 	init_xy(x,y);
@@ -119,7 +119,7 @@ int main(int arg, char *argv[])
 	//gnuplot_angle_gray_IMP(h, x, y, z, BuffLength-1, Nline);
 
 	int k=1;
-	//int temp=0;
+	int temp=0;
 	while(k)
 	{	
 		for (i=0 ; i<Nline ; i++)
@@ -135,7 +135,6 @@ int main(int arg, char *argv[])
 			if (i<Nline+2)
 			{
 				line=(int)(buff[0])-1;
-				line=(line+256)%256;
 				for (j=0 ; j<BuffLength-1 ; j++)
 				{
 					/*temp=(int)(buff[j+1]);
@@ -145,12 +144,13 @@ int main(int arg, char *argv[])
 						z[line][j]=255+temp;
 					}
 					else z[line][j]=temp;*/
-					z[line][j]=(int)((buff[j+1]+256)%256);
+					temp=(int)((buff[j+1]+256)%256);
+					z[line][j]=20*log10((double)temp);
 				}
 			}
 		}
 
-		gnuplot_matrix(h, z, BuffLength-1, Nline);
+		gnuplot_matrixdouble(h, z, BuffLength-1, Nline);
 	}
 	writefile(x,y,z,Nline,BuffLength-1);
 

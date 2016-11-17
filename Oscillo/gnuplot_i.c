@@ -843,4 +843,29 @@ void gnuplot_matrix(gnuplot_ctrl *handle, int **z, int Nr, int Ntheta)
 	return;
 }
 
+void gnuplot_matrixdouble(gnuplot_ctrl *handle, double **z, int Nr, int Ntheta)
+{
+	int i, j;
+	FILE *fmat;
+	if (handle==NULL || z==NULL || (Nr<1) || (Ntheta<1)) return;
+
+	fmat=fopen("mat.dat","w+");
+
+	for (i=0 ; i<Ntheta ; i++)
+	{
+		for (j=0 ; j<Nr ; j++)
+		{
+			fprintf(fmat,"%f ",z[i][j]);
+		}
+		fprintf(fmat,"\n");
+	}
+	fclose(fmat);
+
+	//gnuplot_cmd(handle, "clear");
+	//gnuplot_cmd(handle, "set pm3d map");
+	//gnuplot_cmd(handle, "set palette gray");
+	gnuplot_cmd(handle, "splot \"mat.dat\" matrix");
+
+	return;
+}
 /* vim: set ts=4 et sw=4 tw=75 */

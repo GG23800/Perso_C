@@ -1,6 +1,24 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+#include<math.h>
+
+void writefile (double **x, double **y, double **z, int line, int row)
+{
+	int i, j;
+	FILE * f;
+	f = fopen("scan05log.dat", "w+");
+	for (i=0 ; i<row ; i++)
+	{
+		for (j=0 ; j<line ; j++)
+		{
+			fprintf(f, "%f %f %f\n", x[i][j], y[i][j], z[i][j]);
+		}
+		fprintf(f,"\n");
+	}
+	fclose(f);
+}
+
 int main(int arg, char * argv[])
 {
 	FILE *fr=NULL;
@@ -11,7 +29,7 @@ int main(int arg, char * argv[])
 	int nline=0, nrow=0; //to determine the size of the 2D array
 	int i=0, j=0; //loop variable
 
-	fr=fopen("scan01.dat","r");
+	fr=fopen("scan05.dat","r");
 	if (fr==NULL)
 	{
 		printf("file not found\n");
@@ -32,32 +50,42 @@ int main(int arg, char * argv[])
 	double ** x=NULL;
 	double ** y=NULL;
 	double ** z=NULL;
-	x=(double **)malloc(nline*sizeof(double *));
-	y=(double **)malloc(nline*sizeof(double *));
-	z=(double **)malloc(nline*sizeof(double *));
+	x=(double **)malloc(nrow*sizeof(double *));
+	y=(double **)malloc(nrow*sizeof(double *));
+	z=(double **)malloc(nrow*sizeof(double *));
+	int temp=0;
+	float tempx=0.0, tempy=0.0;
 
-	for (i=0 ; i<nline ; i++)
+	for (i=0 ; i<nrow ; i++)
 	{
-		x[i]=(double *)malloc(nrow*sizeof(double));
-		y[i]=(double *)malloc(nrow*sizeof(double));
-		z[i]=(double *)malloc(nrow*sizeof(double));
+		x[i]=(double *)malloc(nline*sizeof(double));
+		y[i]=(double *)malloc(nline*sizeof(double));
+		z[i]=(double *)malloc(nline*sizeof(double));
 	}
 
-	fr=fopen("scan01.dat","r");
+	fr=fopen("scan05.dat","r");
 	if (fr==NULL) 
 	{
-	printf"failed to open a second time the file\n");
+	printf("failed to open a second time the file\n");
 	return 1;
 	}
 
-	//usage, double boucle avec fscanf
-	//quand on arrive oà l'espage faire getline
+	for (j=0 ; j<nrow ; j++)
+	{
+		for (i=0 ; i<nline ; i++)
+		{
+			fscanf(fr,"%f %f %i",&tempx,&tempy,&temp);
+			temp=(temp+256)%256;
+			x[j][i]=(double)tempx;
+			y[j][i]=(double)tempy;
+			z[j][i]=20.0*log10((double)temp);
+		}
+		read=getline(&line, &len, fr);
+	}
 
 	fclose(fr);
-	/*
-	now define the 2D double pointer x, y, z
-	use fscanf, dont forget to cast z as a double
-	*/
+        
+        writefile(x,y,z,nline,nrow);
 
 	free(x);
 	free(y);

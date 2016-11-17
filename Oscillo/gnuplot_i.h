@@ -429,4 +429,6 @@ void gnuplot_angle_gray_IMP(gnuplot_ctrl *handle, double **x, double **y, double
 
 void gnuplot_matrix(gnuplot_ctrl *handle, int **z, int Nx, int Ny);
 
+void gnuplot_matrixdouble(gnuplot_ctrl *handle, double **z, int Nx, int Ny);
+
 #endif
