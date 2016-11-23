@@ -119,14 +119,19 @@ int half_step_time(stepper_motor* stepper, double* speed)
 	{
 		case full :
 			Nstep=400;
+			break;
 		case full_2 :
 			Nstep=400*2;
+			break;
 		case full_4 :
 			Nstep=400*4;
+			break;
 		case full_8 :
 			Nstep=400*8;
+			break;
 		case full_16 :
 			Nstep=400*16;
+			break;
 	}
 
 	time=(double)(1000000/Nstep)/(*speed)/2.0; //time in us 
@@ -144,14 +149,19 @@ int step_number(stepper_motor* stepper, double* angle)
 	{
 		case full :
 			minimum_angle=360.0/400.0;
+			break;
 		case full_2 :
 			minimum_angle=360.0/(400.0*2.0);
+			break;
 		case full_4 :
 			minimum_angle=360.0/(400.0*4.0);
+			break;
 		case full_8 :
 			minimum_angle=360.0/(400.0*8.0);
+			break;
 		case full_16 :
 			minimum_angle=360.0/(400.0*16.0);
+			break;
 	}
 
 	if ((*angle)<minimum_angle){(*angle)=minimum_angle;}	

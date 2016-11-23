@@ -9,11 +9,13 @@ int main (int argc, char *argv[])
 	double time, speed=3.0;
 	double angle=14.5742;
 	int Nstep;
-	mode step_size=full_16;
+	mode step_size=full_8;
 
 	init_stepper(&stepper);
 
 	set_mode(&stepper, step_size);
+
+	printf("mode : %i\n",step_size);
 
 	time=half_step_time(& stepper, &speed);
 	printf("speed = %f\n",speed);
