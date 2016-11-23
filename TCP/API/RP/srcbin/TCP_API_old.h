@@ -160,7 +160,10 @@ void init_TCP_server(SOCKET* sock, int Port,client* client_list, unsigned int Ma
 	SOCKADDR_IN server={0};
 
 	//Create socket
-	(*sock)=socket(AF_INET, SOCK_STREAM,0);
+	int i=56;
+	i=socket(AF_INET, SOCK_STREAM,0);
+	printf("socket return %i\n",i);
+	*sock=i;
 	if ((*sock)==INVALID_SOCKET)
 	{
 		perror("socket()");
@@ -193,11 +196,13 @@ void init_TCP_server(SOCKET* sock, int Port,client* client_list, unsigned int Ma
 void *TCP_server_routine(void* p_data)
 {
 	server_info* serv_info=p_data;
+
+	printf("socket = %i\n",serv_info->sock);
 	
 	while (1)
 	{
 		add_client(serv_info->client_list,serv_info->sock);
-		printf("client number %i connected\n",serv_info->client_list->NbClient);
+		printf("after add\n");
 	}
 
 	return NULL;
