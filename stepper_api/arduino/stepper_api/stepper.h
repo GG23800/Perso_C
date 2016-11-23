@@ -24,7 +24,7 @@ enum sens
 
 void init_stepper(stepper_motor* stepper); //initialyse the structure stepper_motor
 void enable_stepper(stepper_motor* stepper);
-void desable_stepper(stepper_motor* stepper);
+void disable_stepper(stepper_motor* stepper);
 void set_mode(stepper_motor* stepper, mode step_size); //set mode of the stepper : full, 1/2, 1/4, 1/8, 1/16 step
 int half_step_time(stepper_motor* stepper, double* speed); //give time of a half step depending on the mode and speed in tour per second, note that this time is in microseconds and must be greater than 1 us. It change the speed to its real value
 int step_number(stepper_motor* stepper, double* angle); //give the number of step to do in order to move to a given angle, if angle is not a multiple of the angle of a step, angle is change to its correct value
@@ -53,6 +53,14 @@ void init_stepper(stepper_motor* stepper)
 	stepper->pin_dir=DIR;
 	stepper->step_size=full;
 
+  
+  pinMode(stepper->pin_en,OUTPUT);
+  pinMode(stepper->pin_ms1,OUTPUT);
+  pinMode(stepper->pin_ms2,OUTPUT);
+  pinMode(stepper->pin_ms3,OUTPUT);
+  pinMode(stepper->pin_step,OUTPUT);
+  pinMode(stepper->pin_dir,OUTPUT);
+
 	digitalWrite(stepper->pin_en,HIGH);
 	digitalWrite(stepper->pin_ms1,LOW);
 	digitalWrite(stepper->pin_ms2,LOW);
@@ -66,7 +74,7 @@ void enable_stepper(stepper_motor* stepper)
 	digitalWrite(stepper->pin_en,LOW);
 }
 
-void desable_stepper(stepper_motor* stepper)
+void disable_stepper(stepper_motor* stepper)
 {
 	digitalWrite(stepper->pin_en,HIGH);
 }
@@ -119,14 +127,19 @@ int half_step_time(stepper_motor* stepper, double* speed)
 	{
 		case full :
 			Nstep=400;
+      break;
 		case full_2 :
 			Nstep=400*2;
+      break;
 		case full_4 :
 			Nstep=400*4;
+      break;
 		case full_8 :
 			Nstep=400*8;
+      break;
 		case full_16 :
 			Nstep=400*16;
+     break;
 	}
 
 	time=(double)(1000000/Nstep)/(*speed)/2.0; //time in us 
@@ -144,14 +157,19 @@ int step_number(stepper_motor* stepper, double* angle)
 	{
 		case full :
 			minimum_angle=360.0/400.0;
+      break;
 		case full_2 :
 			minimum_angle=360.0/(400.0*2.0);
+      break;
 		case full_4 :
 			minimum_angle=360.0/(400.0*4.0);
+      break;
 		case full_8 :
 			minimum_angle=360.0/(400.0*8.0);
+      break;
 		case full_16 :
 			minimum_angle=360.0/(400.0*16.0);
+      break;
 	}
 
 	if ((*angle)<minimum_angle){(*angle)=minimum_angle;}	
@@ -168,6 +186,7 @@ void move(stepper_motor* stepper, double* angle, double* speed, sens dir)
 
 	digitalWrite(stepper->pin_dir,dir);
 	half_time=half_step_time(stepper, speed);
+  Serial.println(half_time);
 	Nstep=step_number(stepper, angle);
 
 	for (i=0 ; i<Nstep ; i++)
@@ -181,7 +200,7 @@ void move(stepper_motor* stepper, double* angle, double* speed, sens dir)
 
 void init_position(stepper_motor* stepper, double angle)
 {
-	double tour=360.0, speed=3.0;
+	double tour=360.0, speed=0.3;
 
 	enable_stepper(stepper);
 	delay(100);
