@@ -1,17 +1,18 @@
 #ifndef STEPPER_H
 #define STEPPER_H
 
-#include<stdio.h>
+/*#include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
 
-#include"rp.h"
+#include"rp.h"*/
 
 typedef struct stepper_motor stepper_motor; //so we can call stepper_motor and not struct stepper_motor
 typedef enum mode mode;
 typedef enum sens sens;
 
 //functions to adapte depending on the hardware
+void init_gpio(int pin, int value); //define gpio as input or output
 void set_gpio(int pin, int value); //set value high or low to gpio pin
 void wait(int time); //wait time in us
 
@@ -36,15 +37,19 @@ enum sens
 
 struct stepper_motor
 {
-	rp_dpin_t pin_en;
-	rp_dpin_t pin_ms1;
-	rp_dpin_t pin_ms2;
-	rp_dpin_t pin_ms3;
-	rp_dpin_t pin_step;
-	rp_dpin_t pin_dir;
+	int pin_en;
+	int pin_ms1;
+	int pin_ms2;
+	int pin_ms3;
+	int pin_step;
+	int pin_dir;
 	mode step_size;
-	
 };
+
+void init_gpio(int pin, int value)
+{
+	rp_DpinSetDirection(pin, value);
+}
 
 
 void set_gpio(int pin, int value)
@@ -68,32 +73,29 @@ void init_stepper(stepper_motor* stepper)
 	stepper->pin_dir=RP_DIO0_N;
 	stepper->step_size=full;
 
+	init_gpio(stepper->pin_en,1);
+	init_gpio(stepper->pin_ms1,1);
+	init_gpio(stepper->pin_ms2,1);
+	init_gpio(stepper->pin_ms3,1);
+	init_gpio(stepper->pin_step,1);
+	init_gpio(stepper->pin_dir,1);
+
 	set_gpio(stepper->pin_en,1);
 	set_gpio(stepper->pin_ms1,0);
 	set_gpio(stepper->pin_ms2,0);
 	set_gpio(stepper->pin_ms3,0);
 	set_gpio(stepper->pin_step,0);
 	set_gpio(stepper->pin_dir,0);
-
-	/*rp_DpinSetState(stepper->pin_en,RP_HIGH);
-	rp_DpinSetState(stepper->pin_ms1,RP_LOW);
-	rp_DpinSetState(stepper->pin_ms2,RP_LOW);
-	rp_DpinSetState(stepper->pin_ms3,RP_LOW);
-	rp_DpinSetState(stepper->pin_ms3,RP_LOW);
-	rp_DpinSetState(stepper->pin_step,RP_LOW);
-	rp_DpinSetState(stepper->pin_dir,RP_LOW);*/
 }
 
 void enable_stepper(stepper_motor* stepper)
 {
 	set_gpio(stepper->pin_en,0);
-	//rp_DpinSetState(stepper->pin_en,RP_LOW);
 }
 
 void disable_stepper(stepper_motor* stepper)
 {
 	set_gpio(stepper->pin_en,0);
-	//rp_DpinSetState(stepper->pin_en,RP_LOW);
 }
 
 void set_mode(stepper_motor* stepper, mode step_size)
@@ -107,45 +109,30 @@ void set_mode(stepper_motor* stepper, mode step_size)
 			set_gpio(stepper->pin_ms1,0);
 			set_gpio(stepper->pin_ms2,0);
 			set_gpio(stepper->pin_ms3,0);
-			/*rp_DpinSetState(stepper->pin_ms1,RP_LOW);
-			rp_DpinSetState(stepper->pin_ms2,RP_LOW);
-			rp_DpinSetState(stepper->pin_ms3,RP_LOW);*/
 		}
 		if (step_size==full_2)
 		{
 			set_gpio(stepper->pin_ms1,1);
 			set_gpio(stepper->pin_ms2,0);
 			set_gpio(stepper->pin_ms3,0);
-			/*rp_DpinSetState(stepper->pin_ms1,RP_HIGH);
-			rp_DpinSetState(stepper->pin_ms2,RP_LOW);
-			rp_DpinSetState(stepper->pin_ms3,RP_LOW);*/
 		}
 		if (step_size==full_4)
 		{
 			set_gpio(stepper->pin_ms1,0);
 			set_gpio(stepper->pin_ms2,1);
 			set_gpio(stepper->pin_ms3,0);
-			/*rp_DpinSetState(stepper->pin_ms1,RP_LOW);
-			rp_DpinSetState(stepper->pin_ms2,RP_HIGH);
-			rp_DpinSetState(stepper->pin_ms3,RP_LOW);*/
 		}
 		if (step_size==full_8)
 		{
 			set_gpio(stepper->pin_ms1,1);
 			set_gpio(stepper->pin_ms2,1);
 			set_gpio(stepper->pin_ms3,0);
-			/*rp_DpinSetState(stepper->pin_ms1,RP_HIGH);
-			rp_DpinSetState(stepper->pin_ms2,RP_HIGH);
-			rp_DpinSetState(stepper->pin_ms3,RP_LOW);*/
 		}
 		if (step_size==full_16)
 		{
 			set_gpio(stepper->pin_ms1,1);
 			set_gpio(stepper->pin_ms2,1);
 			set_gpio(stepper->pin_ms3,1);
-			/*rp_DpinSetState(stepper->pin_ms1,RP_HIGH);
-			rp_DpinSetState(stepper->pin_ms2,RP_HIGH);
-			rp_DpinSetState(stepper->pin_ms3,RP_HIGH);*/
 		}
 	}
 }
@@ -216,7 +203,6 @@ void move(stepper_motor* stepper, double* angle, double* speed, sens dir)
 	int Nstep, half_time;
 	int i;
 
-	//rp_DpinSetState(stepper->pin_dir,dir);
 	set_gpio(stepper->pin_dir,dir);
 	half_time=half_step_time(stepper, speed);
 	Nstep=step_number(stepper, angle);
@@ -227,10 +213,6 @@ void move(stepper_motor* stepper, double* angle, double* speed, sens dir)
 		wait(half_time);
 		set_gpio(stepper->pin_step,0);
 		wait(half_time);
-		/*digitalWrite(stepper->pin_step,HIGH);
-		delayMicroseconds(half_time);
-		digitalWrite(stepper->pin_step,LOW);
-		delayMicroseconds(half_time);*/
 	}
 }
 
@@ -239,9 +221,9 @@ void init_position(stepper_motor* stepper, double angle)
 	double tour=360.0, speed=3.0;
 
 	enable_stepper(stepper);
-	//delay(100);
+	wait(100);
 	move(stepper, &tour, &speed, sens2);
-	//delay(50);
+	wait(100);
 	move(stepper, &angle, &speed, sens1);
 
 }

@@ -21,6 +21,7 @@ enum sens
 };
 
 //functions to adapte depending on the hardware
+void init_gpio(int pin, int value); //define gpio as input or output
 void set_gpio(int pin, int value); //set value high or low to gpio pin
 void wait(int time); //wait time in us
 
@@ -42,9 +43,12 @@ struct stepper_motor
 	int pin_step;
 	int pin_dir;
 	mode step_size;
-	
 };
 
+void init_gpio(int pin, int value)
+{
+	pinMode(pin, value);
+}
 
 void set_gpio(int pin, int value)
 {
@@ -67,19 +71,19 @@ void init_stepper(stepper_motor* stepper)
 	stepper->pin_dir=5;
 	stepper->step_size=full;
 
-  pinMode(stepper->pin_en,OUTPUT);
-  pinMode(stepper->pin_ms1,OUTPUT);
-  pinMode(stepper->pin_ms2,OUTPUT);
-  pinMode(stepper->pin_ms3,OUTPUT);
-  pinMode(stepper->pin_step,OUTPUT);
-  pinMode(stepper->pin_dir,OUTPUT);
+	init_gpio(stepper->pin_en,1);
+	init_gpio(stepper->pin_ms1,1);
+	init_gpio(stepper->pin_ms2,1);
+	init_gpio(stepper->pin_ms3,1);
+	init_gpio(stepper->pin_step,1);
+	init_gpio(stepper->pin_dir,1);
 
-  digitalWrite(stepper->pin_en,HIGH);
-  digitalWrite(stepper->pin_ms1,LOW);
-  digitalWrite(stepper->pin_ms2,LOW);
-  digitalWrite(stepper->pin_ms3,LOW);
-  digitalWrite(stepper->pin_step,LOW);
-  digitalWrite(stepper->pin_dir,LOW);
+	set_gpio(stepper->pin_en,1);
+	set_gpio(stepper->pin_ms1,0);
+	set_gpio(stepper->pin_ms2,0);
+	set_gpio(stepper->pin_ms3,0);
+	set_gpio(stepper->pin_step,0);
+	set_gpio(stepper->pin_dir,0);
 }
 
 void enable_stepper(stepper_motor* stepper)
