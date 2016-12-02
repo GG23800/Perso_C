@@ -14,7 +14,7 @@
 #define Rmin 25 //minimum distance (mm) of the scan
 #define Rmax 150 //maximum distance (mm) of the scan
 #define angle 60 //angle in degree of the scan
-#define Nline 100 //number of line of the scan
+#define Nline 64 //number of line of the scan
 
 int init_xy (double **x, double **y)
 {

@@ -1,6 +1,8 @@
 #ifndef STEPPER_H
 #define STEPPER_H
 
+#include<unistd.h>
+
 typedef struct stepper_motor stepper_motor; //so we can call stepper_motor and not struct stepper_motor
 typedef enum mode mode;
 typedef enum sens sens;
@@ -90,7 +92,7 @@ void enable_stepper(stepper_motor* stepper)
 
 void disable_stepper(stepper_motor* stepper)
 {
-	set_gpio(stepper->pin_en,0);
+	set_gpio(stepper->pin_en,1);
 }
 
 void set_mode(stepper_motor* stepper, mode step_size)

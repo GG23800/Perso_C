@@ -57,7 +57,7 @@ int main(int arg, char *argv[])
 	j=0;
 	while(1)
 	{	
-		if(recv(sock, buff, BuffLength, MSG_WAITALL)==0)
+		if(recv(sock, buff, BuffLength-1, MSG_WAITALL)==0)
 			{
 				printf("Server closed\n");
 				break;
@@ -75,7 +75,7 @@ int main(int arg, char *argv[])
 		}
 	}
 
-	sleep(30);
+	usleep(30);
 	close(sock);
 	free(y);
 	return 0;
