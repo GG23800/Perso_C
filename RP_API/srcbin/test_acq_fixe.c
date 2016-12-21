@@ -44,6 +44,7 @@ int main(int argc, char** argv)
 	init_stepper(&stepper);
 	set_mode(&stepper, full_8);
 	disable_stepper(&stepper);
+	usleep(10000);
 	int Nline=64;
 
 	while(1)

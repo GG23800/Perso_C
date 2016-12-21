@@ -37,7 +37,7 @@ void close_TCP_client(SOCKET* sock); //close client connexion (for client)
 int send_TCP_server(client* client_list, char* buffer, int buff_length, int target); // send buffer of size buff_length to client with id target, if target<0 buffer is sent to all clients for server. If a client is disconnected, it clear it and return 1, else it returns 0
 void send_TCP_client(SOCKET* sock, char* buffer, int buff_length); //send buffer of size buff_length to server for client
 int receive_TCP_server(client* client_list, char* buffer, int buff_length, int target); //receive buffer of size buff_length from client with id target for server
-int reveive_TCP_client(SOCKET* sock, char* buffer, int buff_length); //receive buffer of size buff from server for client
+int receive_TCP_client(SOCKET* sock, char* buffer, int buff_length); //receive buffer of size buff from server for client
 
 struct client
 {

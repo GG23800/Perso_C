@@ -18,6 +18,15 @@ void signal_callback_handler()
 	close_RP();
 }
 
+void writefile (uint32_t length, float *buffer)
+{
+	FILE *f=NULL;
+	f=fopen("test.txt","w+");
+	int i=0;
+	for (i=0 ; i<(int)length ; i++){fprintf(f,"%f\n",buffer[i]);}
+	fclose(f);
+}
+
 int main(int argc, char** argv)
 {
 	//close server and RedPitaya if CTRL+C
@@ -31,51 +40,53 @@ int main(int argc, char** argv)
 	launch_server(&sock, &client_list);
 
 	//RedPitaya initialisation
-	init_RP(1);
+	int dec=8;
+	init_RP(dec);
+	float x0=0.0, xf=200.0;
+	float level0=0.6, levelf=0.8;
+	int delay=0;
+	uint32_t buffer_length=0;
+	init_ramp(1, level0, x0+5, levelf, xf-5); 
 	float *buffer_float=NULL;
 	char *buffer_char=NULL;
-	uint32_t buffer_length=1024;
-	int i=0;
-	buffer_float=(float*)malloc(buffer_length*sizeof(float));
-	buffer_char=(char*)malloc((buffer_length+1)*sizeof(char));
+	int i=0, j=0;
 
-	for (i=0 ; i<buffer_length ; i++)
-	{
-		buffer_float[i]=((float)i)/1023.0;
-	}
+	init_variable(x0, xf, dec, &buffer_length, &delay);
+	buffer_float=(float *)malloc(((int)buffer_length)*sizeof(float));
+	buffer_char=(char *)malloc(((int)buffer_length+1)*sizeof(char));
+	printf("buffer length = %i\n",(int)buffer_length);
+	printf("delay = %i\n",delay);
 
-	//stepper initialisation
-	stepper_motor stepper;
-	init_stepper(&stepper);
-	set_mode(&stepper, full_8);
-
-	double angle=0.0, speed=2.0;
-	double sector=60.0;
 	int Nline=64;
-	angle=sector/((double)Nline);
-	init_position(&stepper, 120);
 
-	while(1)
+	while(j<1)
 	{
 		for (i=0 ; i<Nline ; i++)
 		{
-			move(&stepper, &angle, &speed, sens1);
+			trigg(delay);
 			pulse();
+			on_trigger_acquisition(buffer_float, buffer_length);
 			send_via_tcp(i+1, buffer_char, buffer_float, buffer_length, &client_list);
+			pulse();
 			usleep(3000);
 		}
 		for (i=Nline ; i>0 ; i--)
 		{
-			move(&stepper, &angle, &speed, sens2);
+			trigg(delay);
 			pulse();
+			on_trigger_acquisition(buffer_float, buffer_length);
 			send_via_tcp(i, buffer_char, buffer_float, buffer_length, &client_list);
+			pulse();
 			usleep(3000);
 		}
+		j++;
 	}
+	writefile(buffer_length, buffer_float);
 
 	//close TCP server
 	close_TCP_server(&sock, &client_list);
 	//close RedPitaya
+	end_ramp();
 	close_RP();
 	free(buffer_float);
 	free(buffer_char);
