@@ -1,5 +1,6 @@
 #include<stdio.h> //for printf
 #include<stdlib.h> //for exit()
+#include<time.h> //for timestamp
 
 #include"gnuplot_i.h"
 #include"TCP_API.h"
@@ -18,6 +19,54 @@ int int_converter(char set)
 	tmp+=256;
 	tmp=tmp%256;
 	return tmp;
+}
+
+void writefile (int **z, int line, int row, char *name)
+{
+	int i, j;
+	FILE * f;
+	f = fopen(name,"w+");
+	fprintf(f, "#timestamp:%i\n",(int)time(NULL));
+	fprintf(f, "#lines:%i\n",Nline);
+	fprintf(f, "#length:%i\n",Npoint);
+	fprintf(f, "#frequency:%f\n",125.0/((float)dec));
+	fprintf(f, "#piezofrequency:3.5\n");
+	fprintf(f, "#angle:%f\n",sector);
+	fprintf(f, "#r0:%f\n",x0);
+	fprintf(f, "#rf:%f\n",xf);
+	for (i=0 ; i<line ; i++)
+	{
+		for (j=0 ; j<row ; j++)
+		{
+			fprintf(f, "%i ", z[i][j]);
+		}
+		fprintf(f,"\n");
+	}
+	fclose(f);
+}
+
+void writefileicsv (int **z, int line, int row, char *name)
+{
+        int i, j;
+        FILE * f;
+        f = fopen(name,"w+");
+        fprintf(f, "#timestamp:%d\n",(int)time(NULL));
+        fprintf(f, "#lines:%i\n",Nline);
+        fprintf(f, "#length:%i\n",Npoint);
+        fprintf(f, "#frequency:%f\n",125.0/((float)dec));
+        fprintf(f, "#piezofrequency:3.5\n");
+        fprintf(f, "#angle:%f\n",sector);
+        fprintf(f, "#r0:%f\n",x0);
+        fprintf(f, "#rf:%f\n",xf);
+        for (i=0 ; i<line ; i++)
+        {
+                for (j=0 ; j<row ; j++)
+                {
+                        fprintf(f, "%i,", z[i][j]);
+                }
+                fprintf(f,"\n");
+        }
+        fclose(f);
 }
 
 int init_xy (double **x, double **y)
@@ -57,6 +106,7 @@ int main(int arg, char *argv[])
 	SOCKET sock;
 	const char *IP="192.168.128.3";
 	init_TCP_client(&sock, IP, Port);
+	char name[50];
 
 	int Nset=5;
 	char settings[Nset];
@@ -95,7 +145,7 @@ int main(int arg, char *argv[])
 	printf("Npoint = %i\n",Npoint);
 	printf("Nline = %i\n",Nline);
 
-	int k=1, line=0;
+	int k=1, line=0, l=0;
 	while(k)
 	{
 		for (i=0 ; i<Nline ; i++)
@@ -117,6 +167,9 @@ int main(int arg, char *argv[])
 			}
 		}
 		gnuplot_matrix(h, z, Npoint, Nline);	
+		sprintf(name, "main%i.txt",l);
+		writefile(z, Nline, Npoint, name);
+		l++;
 	}
 
 	usleep(30);

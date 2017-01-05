@@ -10,7 +10,7 @@
 #define PORT 7538
 
 float x0=50.0;
-float xf=100.0;
+float xf=150.0;
 int dec=8;
 int Nline=128;
 double sector=80.0;
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 	//RedPitaya and settings initialisation
 	init_RP();
 	uint32_t buffer_length=0;
-	float  level0=0.10, levelf=1.0;
+	float  level0=0.80, levelf=1.0;
 	int delay;
 
 	float *buffer_float=NULL;
