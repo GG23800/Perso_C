@@ -14,7 +14,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   Serial.println(stepper.pin_step);
   delay(1000);
-  set_mode(&stepper, full);
+  set_mode(&stepper, full_16);
   init_position(&stepper, 120);
   disable_stepper(&stepper);
 }
