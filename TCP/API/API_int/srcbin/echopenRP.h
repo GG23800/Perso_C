@@ -81,6 +81,7 @@ void init_data(data *data_RP, unsigned int Nmax, int PORT, float level0, float l
 		data_RP->stepper=(stepper_motor *)malloc(sizeof(stepper_motor));
 		init_stepper(data_RP->stepper);
 		set_mode(data_RP->stepper, data_RP->stepper_mode);
+		init_position(data_RP->stepper, 150.0-sector/2.0);
 	}
 }
 
@@ -178,13 +179,22 @@ void set_acquisition(int dec)
 	{
 		rp_AcqSetDecimation(RP_DEC_1);
 	}
-	else
+	else if (dec==8)
 	{
 		rp_AcqSetDecimation(RP_DEC_8);
 		rp_AcqSetAveraging(1);
 	}
+	else
+	{
+		rp_AcqSetDecimation(RP_DEC_64);
+		rp_AcqSetAveraging(1);
+	}
+	
 	rp_AcqSetGain(RP_CH_1,RP_HIGH); 	
-	rp_AcqSetGain(RP_CH_2,RP_HIGH); 	
+	rp_AcqSetGain(RP_CH_2,RP_HIGH);
+	//rp_AcqSetGain(RP_CH_1,RP_LOW);
+        //rp_AcqSetGain(RP_CH_2,RP_LOW);
+
 }
 
 void trigg(int delay) 
@@ -235,12 +245,12 @@ void close_RP()
 void send_via_tcp(int line, char *buffer_char, float *buffer_float, uint32_t buffer_length, client *client_list)
 {
 	int i=0;
-	float tmpf, scale=0.9; //depend on maximum value of input, for test scale=1
+	float tmpf, scale=0.9, offset=71.0; //depend on maximum value of input, for test scale=1
 	int tmp;
 	buffer_char[0]=(char)line;
 	for (i=0 ; i<buffer_length ; i++) 
 	{
-		tmpf=255.0/scale*buffer_float[i]+75.0;
+		tmpf=255.0/scale*buffer_float[i]+offset;
 		tmp=(int)tmpf;
 		if (tmp<0) {tmp=-tmp;}
 		if (tmp==0) {tmp=1;}

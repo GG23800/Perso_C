@@ -858,13 +858,59 @@ void gnuplot_matrix(gnuplot_ctrl *handle, int **z, int Nr, int Ntheta)
 	}
 	fclose(fmat);
 
-	//gnuplot_cmd(handle, "clear");
-	//gnuplot_cmd(handle, "set pm3d map");
-	//gnuplot_cmd(handle, "set palette gray");
-	gnuplot_cmd(handle, "splot \"mat.dat\" matrix");
+	gnuplot_cmd(handle, "plot \"mat.dat\" matrix with image");
 
 	return;
 }
+
+void gnuplot_matrix_double(gnuplot_ctrl *handle, double **z, int Nr, int Ntheta)
+{       
+        int i, j;
+        FILE *fmat;
+        if (handle==NULL || z==NULL || (Nr<1) || (Ntheta<1)) return;
+        
+        fmat=fopen("mat.dat","w+");
+        
+        for (i=0 ; i<Ntheta ; i++)
+        {       
+                for (j=0 ; j<Nr ; j++)
+                {       
+                        fprintf(fmat,"%i ",(int)z[i][j]);
+                }
+                fprintf(fmat,"\n");
+        }
+        fclose(fmat);
+        
+        gnuplot_cmd(handle, "plot \"mat.dat\" matrix with image");
+        
+        return;
+}
+
+
+void gnuplot_matrix_live(gnuplot_ctrl *handle, int **z, int Nr, int Ntheta)
+{       
+        int i, j;
+        FILE *fmat;
+        if (handle==NULL || z==NULL || (Nr<1) || (Ntheta<1)) return;
+        
+	gnuplot_cmd(handle, "splot '-' matrix with image\n");
+ 
+        for (i=0 ; i<Ntheta ; i++)
+        {       
+                for (j=0 ; j<Nr ; j++)
+                {       
+                        gnuplot_cmd(handle, "%d ", z[i][j]);
+                }
+                gnuplot_cmd(handle, "\n");
+        }
+	gnuplot_cmd(handle, "e\n");
+	gnuplot_cmd(handle, "e\n");
+
+        //gnuplot_cmd(handle, "plot \"mat.dat\" matrix with image");
+
+        return;
+}
+
 
 void gnuplot_matrixdouble(gnuplot_ctrl *handle, double **z, int Nr, int Ntheta)
 {

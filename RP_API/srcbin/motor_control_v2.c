@@ -31,6 +31,7 @@ int main(int argc, char** argv)
 
 	//RedPitaya initialisation
 	init_RP(1);
+	
 	float *buffer_float=NULL;
 	char *buffer_char=NULL;
 	uint32_t buffer_length=1024;
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
 	buffer_float=(float*)malloc(buffer_length*sizeof(float));
 	buffer_char=(char*)malloc((buffer_length+1)*sizeof(char));
 
-	trigg();
+	trigg(-6192);
 	on_trigger_acquisition(buffer_float, buffer_length);
 	//first trigger is needed cause at power on, there noise interpreted as trigger event by RedPitaya, if not putted there is a missed line so the image is not stable
 
@@ -46,13 +47,13 @@ int main(int argc, char** argv)
 	{
 		for (i=0 ; i<Nline ; i++)
 		{
-			trigg();
+			trigg(-6192);
 			on_trigger_acquisition(buffer_float, buffer_length);
 			send_via_tcp(i+1, buffer_char, buffer_float, buffer_length, &client_list);
 		}
 		for (i=Nline ; i>0 ; i--)
 		{
-			trigg();
+			trigg(-6192);
 			on_trigger_acquisition(buffer_float, buffer_length);
 			send_via_tcp(i, buffer_char, buffer_float, buffer_length, &client_list);
 		}

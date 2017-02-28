@@ -14,7 +14,7 @@ void init_variable(float x0, float xf, int dec, uint32_t *bufferlength, int *del
 void set_acquisition(int dec);
 void trigg();
 void on_trigger_acquisition(float *buffer_float, uint32_t buffer_length);
-void init_RP();
+void init_RP(int trigger);
 void close_RP();
 void send_via_tcp(int line, char *buffer_char, float *buffer_float, uint32_t buffer_length, client *client_list);
 void send_to_server(int line, char *buffer_char, float *buffer_float, uint32_t buffer_length, SOCKET *sock);
@@ -121,13 +121,14 @@ void on_trigger_acquisition(float *buffer_float, uint32_t buffer_length)
 	rp_AcqGetLatestDataV(RP_CH_1, &buffer_length, buffer_float);
 }
 
-void init_RP()
+void init_RP(int trigger)
 {
 	if(rp_Init() != RP_OK)
 	{
 	printf("Rp api init failed!\n");
 	}
 	init_pulse();
+	init_ramp(1, 0.0, 0.0, 1.0, 100);
 }
 
 void close_RP()

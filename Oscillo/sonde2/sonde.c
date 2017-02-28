@@ -133,10 +133,10 @@ int main(int arg, char *argv[])
 
 	//gnuplot object
 	h=gnuplot_init();
-	gnuplot_cmd(h, "set pm3d map");
+	//gnuplot_cmd(h, "set pm3d map");
 	gnuplot_cmd(h, "set palette gray");
 
-	int k=1, line=0, l=0;
+	int k=1, line=0, l=0, temp;
 
 	if (mode_RP==0)
 	{
@@ -159,8 +159,12 @@ int main(int arg, char *argv[])
 				}
 			}
 			gnuplot_matrix(h, z, Npoint, Nline);
-			//sprintf(name, "toto%i.txt", l);
-			//writefile(z, Nline, Npoint, name);
+			temp=l/10;
+			if (temp*10==l)
+			{
+				sprintf(name, "int%i.txt", l);
+				writefile(z, Nline, Npoint, name);
+			}
 			l++;
 		}
 		free(buff);
@@ -187,8 +191,12 @@ int main(int arg, char *argv[])
 				}
 			}
 			gnuplot_matrix(h, z, Npoint, Nline);
-			//sprintf(name, "toto%i.txt", l);
-			//writefile(z, Nline, Npoint, name);
+			temp=l/10;
+			if (temp*10==l)
+			{
+				sprintf(name, "char%i.txt", l);
+				writefile(z, Nline, Npoint, name);
+			}
 			l++;
 		}
 		free(buff);

@@ -433,4 +433,8 @@ void gnuplot_matrix(gnuplot_ctrl *handle, int **z, int Nx, int Ny);
 
 void gnuplot_matrixdouble(gnuplot_ctrl *handle, double **z, int Nx, int Ny);
 
+void gnuplot_matrix_double(gnuplot_ctrl *handle, double **z, int Nr, int Ntheta);
+
+void gnuplot_matrix_live(gnuplot_ctrl *handle, int **z, int Nr, int Ntheta);
+
 #endif

@@ -110,13 +110,16 @@ int main(int arg, char *argv[])
 
 	int Nset=5;
 	char settings[Nset];
-	receive_TCP_client(&sock, settings, Nset);
+	/*receive_TCP_client(&sock, settings, Nset);
 	x0=(double)int_converter(settings[0]);
 	xf=(double)int_converter(settings[1]);
 	dec=int_converter(settings[2]);
 	Nline=int_converter(settings[3]);
 	sector=(double)int_converter(settings[4]);
-	Npoint=(int)(2.0*(xf-x0)*125.0/1.48/((double)dec));
+	Npoint=(int)(2.0*(xf-x0)*125.0/1.48/((double)dec));*/
+
+	Npoint=1024;
+	Nline=64;
 	char *buff=(char *)malloc((Npoint+1)*sizeof(char));
 
 	//gnuplot variable
