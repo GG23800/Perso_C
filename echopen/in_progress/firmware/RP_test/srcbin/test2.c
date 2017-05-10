@@ -8,11 +8,11 @@
 
 #define PORT 7538
 
-float x0=80.0;
-float xf=160.0;
+float r0=80.0;
+float rf=160.0;
 int dec=8;
 int Nline=64;
-double sector=100.0;
+double sector=80.0;
 int mode_RP=0;
 int step=1;
 
@@ -30,41 +30,47 @@ int main (int agrc, char **argv)
 	//close server and RedPitaya if CTRL+C
 	signal(SIGINT, signal_callback_handler);
 
-	double speed=3.0; //1 for dec8 3 for dec1
 
-	//data data_RP;
-	float level0=0.1;
+	data data_RP;
+	float level0=0.3;
 	float levelf=1.0;
+
 	init_data(&data_RP, 5, PORT, level0, levelf, full);  //full_16
 	data_RP.angle=sector/((double)Nline);
-	printf("buffer length = %i\n", (int)data_RP.buffer_length);
 	//enable_stepper(&(data_RP.stepper));
 
+	int16_t *x1=(int16_t *)malloc(((int)data_RP.buffer_length+1)*sizeof(int16_t));
+	int16_t *x2=(int16_t *)malloc(((int)data_RP.buffer_length+1)*sizeof(int16_t));
+
 	int i=1;
-	int t=0000;
+
+	x1[0]=1.0;
+	x2[0]=2.0;
+
+	for (i=1 ; i<data_RP.buffer_length+1 ; i++)
+	{
+		x1[i]=(int16_t)i;
+		x2[i]=x1[i]*2;
+	}
+
+	printf("buffer done\n");
+
 	while(1)
 	{
-		for (i=0 ; i<Nline ; i++)
+		for (i=0 ; i<1 ; i++)
 		{
-			if (i!=0) {move(data_RP.stepper, &(data_RP.angle), &speed, sens1);}
-			internal_trigger_acquisition_TCP(&data_RP, i+1);
-			usleep(t);
+			send_int16_TCP_server((data_RP.client_list), x1, (int)data_RP.buffer_length+1, -1);
 		}
-		//usleep(10000);
-		for (i=Nline ; i>0 ; i--)
+
+		for (i=1 ; i>0 ; i--)
 		{
-			if (i!=Nline) {move(data_RP.stepper, &(data_RP.angle), &speed, sens2);}
-			internal_trigger_acquisition_TCP(&data_RP, i);
-			usleep(t);
+			send_int16_TCP_server((data_RP.client_list), x2, (int)data_RP.buffer_length+1, -1);
 		}
-		//usleep(100000);
-		/*if(i>Nline){i=1;}
-		internal_trigger_acquisition_TCP(&data_RP, i);
-		i++;*/
-		//usleep(100000);
 	}
 
 	printf("close all\n");
+	free(x1);
+	free(x2);
 	clear_data(&data_RP);
 	return 0;
 }

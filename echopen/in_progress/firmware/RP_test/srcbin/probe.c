@@ -7,12 +7,15 @@
 #include "echopenRP.h"
 
 #define PORT 7538
+#define level0 0.3
+#define levelf 1.0
+#define MotorSpeed 3.0
 
-float x0=80.0;
-float xf=160.0;
+float r0=80.0;
+float rf=160.0;
 int dec=8;
 int Nline=64;
-double sector=100.0;
+double sector=80.0;
 int mode_RP=0;
 int step=1;
 
@@ -30,11 +33,11 @@ int main (int agrc, char **argv)
 	//close server and RedPitaya if CTRL+C
 	signal(SIGINT, signal_callback_handler);
 
-	double speed=3.0; //1 for dec8 3 for dec1
+	double speed=MotorSpeed; //1 for dec8 3 for dec1
 
 	//data data_RP;
-	float level0=0.1;
-	float levelf=1.0;
+	//float level0=0.3;
+	//float levelf=1.0;
 	init_data(&data_RP, 5, PORT, level0, levelf, full);  //full_16
 	data_RP.angle=sector/((double)Nline);
 	printf("buffer length = %i\n", (int)data_RP.buffer_length);

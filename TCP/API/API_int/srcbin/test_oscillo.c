@@ -4,7 +4,7 @@
 #include<time.h>
 #include<signal.h>
 
-#include "echopenRP.h"
+#include "oscilloRP.h"
 
 #define PORT 7538
 
@@ -12,7 +12,7 @@ float x0=80.0;
 float xf=160.0;
 int dec=8;
 int Nline=64;
-double sector=100.0;
+double sector=80.0;
 int mode_RP=0;
 int step=1;
 
@@ -33,35 +33,19 @@ int main (int agrc, char **argv)
 	double speed=3.0; //1 for dec8 3 for dec1
 
 	//data data_RP;
-	float level0=0.1;
+	float level0=0.3;
 	float levelf=1.0;
 	init_data(&data_RP, 5, PORT, level0, levelf, full);  //full_16
 	data_RP.angle=sector/((double)Nline);
 	printf("buffer length = %i\n", (int)data_RP.buffer_length);
+
+	data_RP.buffer_length=16384;
+	data_RP.delay=8192;
 	//enable_stepper(&(data_RP.stepper));
 
-	int i=1;
-	int t=0000;
 	while(1)
 	{
-		for (i=0 ; i<Nline ; i++)
-		{
-			if (i!=0) {move(data_RP.stepper, &(data_RP.angle), &speed, sens1);}
-			internal_trigger_acquisition_TCP(&data_RP, i+1);
-			usleep(t);
-		}
-		//usleep(10000);
-		for (i=Nline ; i>0 ; i--)
-		{
-			if (i!=Nline) {move(data_RP.stepper, &(data_RP.angle), &speed, sens2);}
-			internal_trigger_acquisition_TCP(&data_RP, i);
-			usleep(t);
-		}
-		//usleep(100000);
-		/*if(i>Nline){i=1;}
-		internal_trigger_acquisition_TCP(&data_RP, i);
-		i++;*/
-		//usleep(100000);
+		external_trigger_acquisition_TCP(&data_RP, i+1);
 	}
 
 	printf("close all\n");
