@@ -201,6 +201,8 @@ int main(int arg, char *argv[])
 		while(k)
 		{
 			temp=l/10;
+			int test=temp*10;
+			test=1;
 			for (i=0 ; i<Nline ; i++)
 			{
 				if (receive_int16_TCP_client(&sock, buff, Npoint+1)==1)
@@ -217,12 +219,13 @@ int main(int arg, char *argv[])
 					zero_padding(tmp, pad, Npoint, pad_len, 1); 
 					tmp2=env[line];
                         		envelope(pad, tmp2, pad_len, fech, f0, fm, 0);
-					if (temp*10==l) {for (j=0 ; j<Npoint ; j++) {z[line][j]=buff[j+1];}}
+					//if (test==l) 
+					if (test) {for (j=0 ; j<Npoint ; j++) {z[line][j]=buff[j+1];}}
 					//for (j=0 ; j<Npoint ; j++) {z[line][j]=(int)env[j];}
 				}
 			}
 			gnuplot_matrix_double(h, env, Npoint, Nline);
-			if (temp*10==l)
+			if (test) // (test==l)
 			{
 				sprintf(name, "int%i.txt", l);
 				writefile(z, Nline, Npoint, name);
@@ -267,6 +270,7 @@ int main(int arg, char *argv[])
 	else {printf("problem with RP settings\n");}
 
 	usleep(30);
+	shutdown(sock,2);
 	close(sock);
 	free(x);
 	free(y);

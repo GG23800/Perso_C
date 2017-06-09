@@ -95,7 +95,7 @@ void add_client(client* client_list, SOCKET sock_server)
 		buffer[1]=(char)rf;
 		buffer[2]=(char)dec;
 		buffer[3]=(char)Nline;
-		buffer[4]=(char)sector;
+		//buffer[4]=(char)sector;
 		buffer[5]=(char)mode_RP;
 
 		if (client_list->NbClient<=client_list->Nmax)
@@ -109,6 +109,7 @@ void add_client(client* client_list, SOCKET sock_server)
 			}
 			else
 			{
+				buffer[4]=(char)sector; //sector can change following stepper settings
 				send_TCP_server(client_list, buffer, Nset, client_list->NbClient);
 				client_list->NbClient+=1;
 				printf("Client number %i on %i, connected on socket = %i\n",client_list->NbClient,client_list->Nmax,client_list->sock_client[client_list->NbClient-1]);

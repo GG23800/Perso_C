@@ -7,6 +7,8 @@
 #include"stepper.h"
 #include"TCP_API.h"
 
+#define angoffset 155.0
+
 extern float r0; //depth of beginning of measurement in mm
 extern float rf; //depth of end of measurement in mm
 extern int dec; //decimation, means that sampling rate is 125/dec Msps
@@ -83,7 +85,7 @@ void init_data(data *data_RP, unsigned int Nmax, int PORT, float level0, float l
 		data_RP->stepper=(stepper_motor *)malloc(sizeof(stepper_motor));
 		init_stepper(data_RP->stepper);
 		set_mode(data_RP->stepper, step_mode);
-		init_position(data_RP->stepper, 150.0-sector/2.0);
+		init_position(data_RP->stepper, angoffset-sector/2.0);
 	}
 }
 

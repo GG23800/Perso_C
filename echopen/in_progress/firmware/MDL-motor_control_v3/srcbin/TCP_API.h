@@ -273,7 +273,11 @@ void close_TCP_server(SOCKET* sock, client* client_list)
 
 	pthread_cancel(TCP_server_thread);//close thread
 
-	for(i=0 ; i<client_list->NbClient ; i++){close(client_list->sock_client[i]);}
+	for(i=0 ; i<client_list->NbClient ; i++)
+	{
+	shutdown(client_list->sock_client[i],2);
+	close(client_list->sock_client[i]);
+	}
 	close((*sock));
 	clear_struct_client(client_list);
 }

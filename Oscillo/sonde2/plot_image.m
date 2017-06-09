@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-z=load("int380.txt");
+z=load("int80.txt");
 z2=z;
 % 50 80
 [l,c]=size(z);
@@ -11,8 +11,8 @@ x=zeros(l,c);
 y=x;
 
 x0=80;
-xf=150;
-sector=80;
+xf=160;
+sector=60;
 
 r=linspace(x0,xf,N);
 th=linspace(-sector/2*pi/180,sector/2*pi/180,l);
