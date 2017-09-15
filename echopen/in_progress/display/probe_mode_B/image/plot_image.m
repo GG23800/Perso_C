@@ -20,6 +20,7 @@ for i=0:10:150
   rf=200;
   r=linspace(r0,rf,N);
   %th=linspace(-sec/2*pi/180,sec/2*pi/180,l);
+  amp=linspace(1,50,N);
   
   fe=125/8;
   f0=2;
@@ -33,11 +34,11 @@ for i=0:10:150
     tmp(1:n0)=0;
     tmp(nf:N)=0;
     tmp=abs(ifft(tmp));
-    y2(j,:)=tmp;
+    y2(j,:)=tmp.*amp;
   endfor
   
   figure(1)
-  surf(log(y2));
+  surf(y2);
   shading interp;
   view([0 90]);
   colormap gray;
@@ -59,7 +60,4 @@ plot(l);
 x2=x2/max(x2);
 
 figure(2)
-plot(x1,x2);
-ylabel('normalized amplitude');
-xlabel('depth (mm)');
-print focal_depth.fig
+plot(y(32,:));

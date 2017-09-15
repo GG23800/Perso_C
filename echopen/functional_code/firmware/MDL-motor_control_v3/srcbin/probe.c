@@ -7,12 +7,12 @@
 #include "echopenRP.h"
 
 #define PORT 7538
-#define level0 1.0 
-#define levelf 1.0
+#define level0 0.1 
+#define levelf 0.7
 #define MotorSpeed 3.0
 
-float r0=80.0;
-float rf=160.0;
+float r0=10.0;
+float rf=100.0;
 int dec=8;
 int Nline=64;
 double sector=80.0;
@@ -50,7 +50,7 @@ int main (int agrc, char **argv)
 	//enable_stepper(&(data_RP.stepper));
 
 	int i=1;
-	int t=000000;
+	int t=00000;
 	while(1)
 	{
 		for (i=0 ; i<Nline ; i++)

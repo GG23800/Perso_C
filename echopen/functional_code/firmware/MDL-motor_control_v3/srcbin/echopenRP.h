@@ -7,7 +7,7 @@
 #include"stepper.h"
 #include"TCP_API.h"
 
-#define angoffset 155.0
+#define angoffset 175.0
 
 extern float r0; //depth of beginning of measurement in mm
 extern float rf; //depth of end of measurement in mm

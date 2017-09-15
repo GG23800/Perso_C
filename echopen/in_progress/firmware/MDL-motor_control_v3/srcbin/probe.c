@@ -34,7 +34,7 @@ int main (int agrc, char **argv)
 
 	float level0=0.3;
 	float levelf=1.0;
-	init_data(&data_RP, 5, PORT, level0, levelf, full);  //full_16
+	init_data(&data_RP, 5, PORT, level0, levelf, full_16);  //full_16
 	data_RP.angle=sector/((double)Nline-1);
 	printf("angle = %lf\n",data_RP.angle);
 	double sec;
